@@ -92,18 +92,6 @@ services:
     depends_on:
       - db
 
-  # -----------------------------------------------------
-  # Redis (optional: cache/sessions/queues)
-  # -----------------------------------------------------
-  redis:
-    image: redis:alpine
-    container_name: recipe-redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    networks:
-      - recipe-network
-
 volumes:
   db_data:
   vendor_data:
