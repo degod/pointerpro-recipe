@@ -1,0 +1,61 @@
+name: RecipeApp Docker CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Prepare environment file
+        run: cp .env.example .env
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and start Docker containers
+        run: docker compose -f docker-compose.yml up -d --build
+
+      - name: Wait for MySQL to be ready
+        run: |
+          echo "Waiting for MySQL service (db) to accept connections..."
+          for i in {1..40}; do
+            if docker compose exec -T db mysqladmin ping -h "127.0.0.1" -u recipe -p'secret' --silent &> /dev/null; then
+              echo "MySQL is ready!"
+              break
+            fi
+            echo "Waiting 3 seconds for MySQL... ($i/40)"
+            sleep 3
+          done
+
+      - name: Install Composer dependencies
+        run: docker compose exec -T app composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Generate application key
+        run: docker compose exec -T app php artisan key:generate
+
+      - name: Run migrations and seeders
+        run: |
+          docker compose exec -T app php artisan migrate:fresh --seed --force
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: db
+          DB_PORT: 3306
+          DB_DATABASE: recipe
+          DB_USERNAME: recipe
+          DB_PASSWORD: secret
+
+      - name: Run test suite
+        run: |
+          docker compose exec -T app php artisan test --stop-on-failure
+
+      - name: Tear down Docker containers
+        if: always()
+        run: docker compose down -v
