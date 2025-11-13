@@ -9,7 +9,9 @@ on:
 # SECURE & CLEAN: No manual GITHUB_TOKEN → no secret scan
 permissions:
   contents: read
-  packages: write
+  packages:
+    read: true
+    write: true
 
 jobs:
   # -------------------------------------------------
