@@ -21,7 +21,7 @@ WORKDIR /var/www/html
 
 COPY ./docker/php/local.ini /usr/local/etc/php/conf.d/local.ini
 
-RUN chown -R developer:www-data /var/www/html
+# RUN chown -R developer:www-data /var/www/html
 
 EXPOSE 9000
 CMD ["php-fpm"]

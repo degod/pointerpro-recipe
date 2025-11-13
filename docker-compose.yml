@@ -1,7 +1,4 @@
 services:
-  # -----------------------------------------------------
-  # Laravel PHP Application
-  # -----------------------------------------------------
   app:
     build:
       context: .
@@ -12,16 +9,12 @@ services:
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
-      - /var/www/html/vendor
-      - /var/www/html/node_modules
     networks:
       - recipe-network
     depends_on:
-      - db
+      db:
+        condition: service_healthy   # <-- wait for MySQL
 
-  # -----------------------------------------------------
-  # Frontend (ViteJS Dev Server)
-  # -----------------------------------------------------
   frontend:
     image: node:20-alpine
     container_name: recipe-frontend
@@ -33,18 +26,18 @@ services:
       - "5173:5173"
     environment:
       - CHOKIDAR_USEPOLLING=true
+      - VITE_HOST=0.0.0.0
+      - VITE_PORT=5173
     networks:
       - recipe-network
     depends_on:
       - app
 
-  # -----------------------------------------------------
-  # Nginx Web Server
-  # -----------------------------------------------------
   nginx:
     image: nginx:stable-alpine
     container_name: recipe-nginx
     restart: unless-stopped
+    platform: linux/amd64
     ports:
       - "9020:80"
     volumes:
@@ -55,32 +48,40 @@ services:
     depends_on:
       - app
 
-  # -----------------------------------------------------
-  # MySQL Database
-  # -----------------------------------------------------
   db:
     image: mysql:8.0
     container_name: recipe-mysql
     restart: unless-stopped
+    platform: linux/amd64
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: recipe
       MYSQL_USER: recipe
       MYSQL_PASSWORD: secret
     volumes:
-      - db_data:/var/lib/mysql
+      - ./mysql-data:/var/lib/mysql
+    command: >-
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --skip-host-cache
+      --skip-name-resolve
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+      start_period: 15s
     networks:
       - recipe-network
     ports:
       - "3302:3306"
 
-  # -----------------------------------------------------
-  # PhpMyAdmin
-  # -----------------------------------------------------
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: recipe-phpmyadmin
     restart: unless-stopped
+    platform: linux/amd64
     environment:
       PMA_HOST: db
       PMA_USER: recipe
@@ -91,11 +92,6 @@ services:
       - recipe-network
     depends_on:
       - db
-
-volumes:
-  db_data:
-  vendor_data:
-  node_modules:
 
 networks:
   recipe-network:
