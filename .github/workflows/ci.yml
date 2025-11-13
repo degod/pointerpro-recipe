@@ -14,7 +14,7 @@ jobs:
   build-php:
     runs-on: ubuntu-latest
     outputs:
-      php-image: ${{ steps.build.outputs.image }}
+      php-image: ghcr.io/${{ github.repository }}/php:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }} # Only this — clean & secure
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cache Docker layers
         uses: actions/cache@v4
@@ -41,13 +41,12 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - name: Build & push PHP image
-        id: build
         uses: docker/build-push-action@v6
         with:
           context: .
           file: Dockerfile
           platforms: linux/amd64
-          push: ${{ github.event_name == 'push' }}
+          push: true # ALWAYS PUSH — PRs need the image!
           tags: |
             ghcr.io/${{ github.repository }}/php:${{ github.sha }}
             ghcr.io/${{ github.repository }}/php:latest
@@ -116,14 +115,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Pull PHP image
+        run: docker pull $PHP_IMAGE
+
       - name: Download Vue build
         uses: actions/download-artifact@v4
         with:
           name: vue-build
           path: public/build/
-
-      - name: Pull PHP image
-        run: docker pull $PHP_IMAGE
 
       - name: Start containers
         run: |
