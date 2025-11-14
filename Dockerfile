@@ -35,6 +35,9 @@ WORKDIR /var/www/html
 # Copy application source code
 COPY . .
 
+# Create .env from example if missing
+RUN cp .env.example .env
+
 # Install composer dependencies (now code exists)
 RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
 
