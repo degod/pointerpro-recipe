@@ -1,7 +1,6 @@
-# ===== STAGE 1: Build PHP (slim, fast) =====
+# ===== STAGE 1: Build PHP extensions =====
 FROM php:8.2-fpm-alpine AS php-builder
 
-# Install system deps
 RUN apk add --no-cache \
     git curl zip unzip libpng libjpeg-turbo freetype libzip \
     oniguruma icu libxml2 postgresql-libs mysql-client \
@@ -12,13 +11,16 @@ RUN apk add --no-cache \
     && pecl install redis && docker-php-ext-enable redis \
     && apk del .build-deps
 
-# Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-# ===== STAGE 2: Runtime (minimal) =====
+# ===== STAGE 2: Runtime =====
 FROM php:8.2-fpm-alpine
 
-# Copy PHP extensions + config
+# Install RUNTIME libs required by GD, intl, zip, etc.
+RUN apk add --no-cache \
+    libpng libjpeg-turbo freetype libzip icu libxml2 oniguruma
+
+# Copy PHP runtime-built extensions
 COPY --from=php-builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 COPY --from=php-builder /usr/local/etc/php/ /usr/local/etc/php/
 COPY --from=php-builder /usr/bin/composer /usr/bin/composer
@@ -30,11 +32,19 @@ RUN adduser -D -u 1000 -G www-data developer \
 
 WORKDIR /var/www/html
 
-# COPY CODE + INSTALL COMPOSER DEPS
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts
+# Copy application source code
+COPY . .
 
-# PHP config: opcache + performance
+# Install composer dependencies (now code exists)
+RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+
+# Cache and optimize Laravel
+RUN php artisan storage:link \
+    && php artisan route:cache \
+    && php artisan config:cache \
+    && php artisan view:cache
+
+# PHP config overrides
 COPY ./docker/php/local.ini /usr/local/etc/php/conf.d/local.ini
 COPY ./docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
