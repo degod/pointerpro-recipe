@@ -30,7 +30,7 @@ class LoginUserRequest extends FormRequest
             $response->error(
                 422,
                 'Validation failed',
-                $validator->errors()
+                $validator->errors()->toArray()
             )
         );
     }

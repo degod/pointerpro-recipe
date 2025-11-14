@@ -71,7 +71,6 @@ class LoginUserControllerTest extends TestCase
             'email' => 'wrong@email.com',
             'password' => 'wrong456',
         ];
-
         $response = $this->postJson(route('user.login'), $payload);
 
         $response->assertStatus(422)
