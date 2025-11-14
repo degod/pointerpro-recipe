@@ -34,12 +34,6 @@ WORKDIR /var/www/html
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts
 
-# Run Laravel post-install
-RUN php artisan storage:link \
-    && php artisan route:cache \
-    && php artisan config:cache \
-    && php artisan view:cache
-
 # PHP config: opcache + performance
 COPY ./docker/php/local.ini /usr/local/etc/php/conf.d/local.ini
 COPY ./docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
