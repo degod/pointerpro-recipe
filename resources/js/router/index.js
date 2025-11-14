@@ -1,8 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Register from '../components/Register.vue';
+import { useAuthStore } from '../stores/auth';
+
+import Register from '../Pages/Register.vue';
+import Home from '../Pages/Home.vue';
+import Layout from '../Layouts/Layout.vue';
+import Login from '../Pages/Login.vue';
+import Recipe from '../Pages/Recipe.vue';
 
 const routes = [
-  { path: '/', name: 'Register', component: Register },
+  {
+    path: '/',
+    component: Layout,
+    children: [
+      { path: '', name: 'home', component: Home, meta: { requiresAuth: true } },
+      { path: 'register', name: 'register', component: Register },
+      { path: 'login', name: 'login', component: Login },
+      { path: 'recipes', name: 'recipes', component: Recipe, meta: { requiresAuth: true } },
+    ],
+  },
 ];
 
 const router = createRouter({
@@ -10,4 +25,20 @@ const router = createRouter({
   routes,
 });
 
-export default router;
+// Navigation Guard
+router.beforeEach((to, from, next) => {
+  const auth = useAuthStore();
+  const publicPages = ['login', 'register'];
+  const isPublic = publicPages.includes(to.name);
+
+  if (!isPublic && !auth.isAuthenticated) {
+    return next({
+      name: 'login',
+      query: { redirect: to.fullPath },
+    });
+  }
+
+  next();
+});
+
+export default router

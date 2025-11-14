@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\RegisterUserRequest;
+use App\Http\Requests\LoginUserRequest;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Services\ResponseService;
 use Illuminate\Support\Facades\Hash;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Hash;
  *     description="Endpoints for user registration and login"
  * )
  */
-class RegisterUserController extends Controller
+class LoginUserController extends Controller
 {
     public function __construct(
         private UserRepositoryInterface $userRepo,
@@ -23,23 +23,21 @@ class RegisterUserController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/api/v1/register",
+     *     path="/api/v1/login",
      *     tags={"Authentication"},
-     *     summary="Register a new user",
-     *     description="Create a new user account with name, email and password",
+     *     summary="Login a new user",
+     *     description="Login a user into user's account with email and password",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name","email","password","password_confirmation"},
-     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             required={"email","password"},
      *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
-     *             @OA\Property(property="password", type="string", format="password", example="secret123"),
-     *             @OA\Property(property="password_confirmation", type="string", format="password", example="secret123")
+     *             @OA\Property(property="password", type="string", format="password", example="secret123")
      *         )
      *     ),
      *     @OA\Response(
-     *         response=201,
-     *         description="User registered successfully",
+     *         response=200,
+     *         description="User logged in successfully",
      *         @OA\JsonContent(
      *             @OA\Property(property="status", type="string", example="success"),
      *             @OA\Property(property="message", type="string", example="User registered successfully"),
@@ -54,6 +52,15 @@ class RegisterUserController extends Controller
      *         )
      *     ),
      *     @OA\Response(
+     *         response=401,
+     *         description="Invalid email or password",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="string", example="error"),
+     *             @OA\Property(property="message", type="string", example="Validation failed"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
      *         response=422,
      *         description="Validation failed",
      *         @OA\JsonContent(
@@ -64,17 +71,22 @@ class RegisterUserController extends Controller
      *     )
      * )
      */
-    public function __invoke(RegisterUserRequest $request)
+    public function __invoke(LoginUserRequest $request)
     {
-        $data = $request->validated();
-        $data['password'] = Hash::make($data['password']);
+        $credentials = $request->validated();
+        $user = $this->userRepo->findByEmail($credentials['email']);
 
-        $user = $this->userRepo->create($data);
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            return $this->response->error(
+                401,
+                'Invalid email or password'
+            );
+        }
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return $this->response->success(
-            201,
-            'User registered successfully',
+            200,
+            'User logged in successfully',
             [
                 'uuid' => $user->uuid,
                 'name' => $user->name,
