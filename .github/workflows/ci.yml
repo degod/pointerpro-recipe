@@ -155,7 +155,7 @@ jobs:
           docker compose -f .github/docker-compose.ci.yml exec -T app php artisan migrate:fresh --seed --force
 
       - name: Run tests
-        run: docker compose -f .github/docker-compose.ci.yml exec -T app php artisan test --stop-on-failure --no-interaction
+        run: docker compose -f .github/docker-compose.ci.yml exec -T app php -d display_errors=Off artisan test --stop-on-failure
 
       - name: Tear down
         if: always()
