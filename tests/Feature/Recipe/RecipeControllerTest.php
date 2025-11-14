@@ -37,4 +37,9 @@ class RecipeControllerTest extends TestCase
         Mockery::close();
         parent::tearDown();
     }
+
+    public function testBasicTest()
+    {
+        $this->assertTrue(true);
+    }
 }
