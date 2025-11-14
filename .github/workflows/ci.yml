@@ -146,10 +146,6 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
-      - name: Install Composer deps
-        run: |
-          docker compose -f .github/docker-compose.ci.yml exec -T app composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
-
       - name: Laravel setup
         run: |
           docker compose -f .github/docker-compose.ci.yml exec -T app php artisan key:generate --force

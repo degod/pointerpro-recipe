@@ -30,6 +30,18 @@ RUN adduser -D -u 1000 -G www-data developer \
 
 WORKDIR /var/www/html
 
+# COPY CODE + INSTALL COMPOSER DEPS
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts
+
+COPY . .
+
+# Run Laravel post-install
+RUN php artisan storage:link \
+    && php artisan route:cache \
+    && php artisan config:cache \
+    && php artisan view:cache
+
 # PHP config: opcache + performance
 COPY ./docker/php/local.ini /usr/local/etc/php/conf.d/local.ini
 COPY ./docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
