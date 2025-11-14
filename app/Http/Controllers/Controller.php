@@ -14,7 +14,7 @@ namespace App\Http\Controllers;
  * )
  * 
  * @OA\Server(
- *     url="http://localhost:9020/api/v1",
+ *     url="http://localhost:9020",
  *     description="Version 1 of the Recipe API"
  * )
  * 
