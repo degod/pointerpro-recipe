@@ -1,8 +1,6 @@
 services:
   app:
     image: ${PHP_IMAGE:-recipe-app}
-    volumes:
-      - .:/var/www/html:delegated
     depends_on:
       db:
         condition: service_healthy
@@ -17,8 +15,6 @@ services:
 
   nginx:
     image: nginx:stable-alpine
-    volumes:
-      - .:/var/www/html:delegated
     ports: ["8000:80"]
     depends_on: [app]
 

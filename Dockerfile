@@ -34,8 +34,6 @@ WORKDIR /var/www/html
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader --no-scripts
 
-COPY . .
-
 # Run Laravel post-install
 RUN php artisan storage:link \
     && php artisan route:cache \
