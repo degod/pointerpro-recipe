@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Recipe;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Repositories\Recipe\RecipeRepositoryInterface;
 use App\Services\ResponseService;
@@ -52,8 +53,14 @@ class IndexRecipeController extends Controller
     public function __invoke(): JsonResponse
     {
         $userId = auth('sanctum')->id();
-        $recipes = $this->recipeRepo->findByUser($userId);
+        $role = auth('sanctum')->user()->role;
 
-        return $this->response->success(200, 'Recipes retrieved', $recipes->toArray());
+        if ($role == UserRole::ADMIN) {
+            $recipes = $this->recipeRepo->all();
+        } else {
+            $recipes = $this->recipeRepo->findByUser($userId);
+        }
+
+        return $this->response->success(200, 'Recipes retrieved', $recipes->items());
     }
 }
