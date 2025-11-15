@@ -10,7 +10,7 @@ use OpenApi\Annotations as OA;
 
 /**
  * @OA\Get(
- *     path="/api/v1/recipes",
+ *     path="/api/v1/recipes/filtered",
  *     summary="Filter and list recipes",
  *     tags={"Recipes"},
  *     @OA\Parameter(

@@ -528,6 +528,91 @@
                 ]
             }
         },
+        "/api/v1/recipes/filtered": {
+            "get": {
+                "tags": [
+                    "Recipes"
+                ],
+                "summary": "Filter and list recipes",
+                "operationId": "f1e68344bf7284955c058f379c5d0ab1",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Search by recipe name",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "cuisine_type",
+                        "in": "query",
+                        "description": "Filter by cuisine type (e.g., Italian, Asian)",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Filtered recipe list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "user_id": {
+                                                "type": "integer",
+                                                "example": 5
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Spaghetti Carbonara"
+                                            },
+                                            "cuisine_type": {
+                                                "type": "string",
+                                                "example": "Italian"
+                                            },
+                                            "ingredients": {
+                                                "type": "string",
+                                                "example": "200g pasta\\n4 eggs\\n100g pancetta"
+                                            },
+                                            "steps": {
+                                                "type": "string",
+                                                "example": "1. Boil pasta\\n2. Fry pancetta\\n3. Mix with eggs"
+                                            },
+                                            "picture": {
+                                                "type": "string",
+                                                "example": "recipes/abc123.jpg",
+                                                "nullable": true
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2025-04-05T10:00:00Z"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2025-04-05T12:30:00Z"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/recipes": {
             "get": {
                 "tags": [

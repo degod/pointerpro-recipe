@@ -29,7 +29,7 @@ class FilterRecipeControllerTest extends RecipeControllerTest
             ->andReturn($paginated);
 
         $request = Request::create(
-            '/api/v1/recipes',
+            '/api/v1/recipes/filtered',
             'GET',
             [
                 'name' => 'spa',
