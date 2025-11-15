@@ -4,7 +4,6 @@ namespace App\Repositories\Recipe;
 
 use App\Models\Recipe;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Database\Eloquent\Collection;
 
 class RecipeRepository implements RecipeRepositoryInterface
 {
@@ -12,9 +11,14 @@ class RecipeRepository implements RecipeRepositoryInterface
         protected Recipe $recipeModel
     ) {}
 
-    public function all(): Collection
+    public function all(): LengthAwarePaginator
     {
-        return $this->recipeModel->all();
+        return $this->recipeModel->orderBy('id', 'DESC')->paginate(3);
+    }
+
+    public function findByUser(int $userId): LengthAwarePaginator
+    {
+        return $this->recipeModel->where(['user_id' => $userId])->orderBy('id', 'DESC')->paginate(3);
     }
 
     public function paginate(int $perPage = 15): LengthAwarePaginator
@@ -40,10 +44,5 @@ class RecipeRepository implements RecipeRepositoryInterface
     public function delete(Recipe $recipe): bool
     {
         return $recipe->delete();
-    }
-
-    public function findByUser(int $userId): Collection
-    {
-        return $this->recipeModel->where('user_id', $userId)->get();
     }
 }

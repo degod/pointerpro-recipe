@@ -6,7 +6,6 @@ use App\Models\Recipe;
 use App\Models\User;
 use App\Repositories\Recipe\RecipeRepository;
 use App\Repositories\Recipe\RecipeRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Tests\TestCase;
@@ -91,8 +90,8 @@ class RecipeRepositoryTest extends TestCase
 
         $recipes = $this->repository->all();
 
-        $this->assertCount(3, $recipes);
-        $this->assertInstanceOf(Collection::class, $recipes);
+        $this->assertCount(3, $recipes->items());
+        $this->assertInstanceOf(LengthAwarePaginator::class, $recipes);
     }
 
     public function test_can_paginate_recipes()
@@ -115,7 +114,7 @@ class RecipeRepositoryTest extends TestCase
 
         $userRecipes = $this->repository->findByUser($this->user->id);
 
-        $this->assertCount(2, $userRecipes);
-        $this->assertTrue($userRecipes->every(fn($r) => $r->user_id === $this->user->id));
+        $this->assertCount(2, $userRecipes->items());
+        $this->assertTrue(collect($userRecipes->items())->every(fn($r) => $r->user_id === $this->user->id));
     }
 }

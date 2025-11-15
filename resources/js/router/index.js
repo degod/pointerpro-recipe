@@ -6,6 +6,9 @@ import Home from '../Pages/Home.vue';
 import Layout from '../Layouts/Layout.vue';
 import Login from '../Pages/Login.vue';
 import Recipe from '../Pages/Recipe.vue';
+import RecipeCreate from '../Pages/RecipeCreate.vue';
+import RecipeShow from '../Pages/RecipeShow.vue';
+import RecipeEdit from '../Pages/RecipeEdit.vue';
 
 const routes = [
   {
@@ -13,9 +16,19 @@ const routes = [
     component: Layout,
     children: [
       { path: '', name: 'home', component: Home, meta: { requiresAuth: true } },
-      { path: 'register', name: 'register', component: Register },
       { path: 'login', name: 'login', component: Login },
-      { path: 'recipes', name: 'recipes', component: Recipe, meta: { requiresAuth: true } },
+      { path: 'register', name: 'register', component: Register },
+
+      {
+        path: 'recipes',
+        meta: { requiresAuth: true },
+        children: [
+          { path: '', name: 'recipes', component: Recipe },
+          { path: 'create', name: 'recipe.create', component: RecipeCreate },
+          { path: ':id', name: 'recipe.show', component: RecipeShow, props: true },
+          { path: ':id/edit', name: 'recipe.edit', component: RecipeEdit, props: true },
+        ],
+      },
     ],
   },
 ];
@@ -41,4 +54,4 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
-export default router
+export default router;
