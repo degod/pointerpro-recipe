@@ -41,7 +41,7 @@ const router = createRouter({
 // Navigation Guard
 router.beforeEach((to, from, next) => {
   const auth = useAuthStore();
-  const publicPages = ['login', 'register'];
+  const publicPages = ['login', 'register', 'home'];
   const isPublic = publicPages.includes(to.name);
 
   if (!isPublic && !auth.isAuthenticated) {

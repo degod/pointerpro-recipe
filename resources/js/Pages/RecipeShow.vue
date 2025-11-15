@@ -21,8 +21,8 @@ const onImageError = (event) => {
 
 const recipeImageUrl = (path) => {
   if (!path) return '';
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9020';
-  return `${base}/storage/${path}`;
+  const repo = import.meta.env.VITE_IMG_REPO_URL || 'http://localhost:9020';
+  return `${repo}/${path}`;
 };
 
 const fetchRecipe = async () => {

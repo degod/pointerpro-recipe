@@ -14,8 +14,7 @@ class UpdateRecipeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $recipe = $this->route('recipe');
-        return $recipe && auth('sanctum')->id() === $recipe->user_id;
+        return auth('sanctum')->check();
     }
 
     /**
@@ -26,10 +25,10 @@ class UpdateRecipeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'sometimes|required|string|max:255',
-            'cuisine_type' => 'sometimes|required|string|max:100',
-            'ingredients' => 'sometimes|required|string',
-            'steps' => 'sometimes|required|string',
+            'name' => 'required|string|max:255',
+            'cuisine_type' => 'required|string|max:100',
+            'ingredients' => 'required|string',
+            'steps' => 'required|string',
             'picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }

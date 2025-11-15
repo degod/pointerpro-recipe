@@ -372,22 +372,22 @@
                             "schema": {
                                 "properties": {
                                     "name": {
-                                        "description": "Optional: New name",
+                                        "description": "New name",
                                         "type": "string",
                                         "example": "Updated Carbonara"
                                     },
                                     "cuisine_type": {
-                                        "description": "Optional: New cuisine",
+                                        "description": "New cuisine",
                                         "type": "string",
                                         "example": "Italian"
                                     },
                                     "ingredients": {
-                                        "description": "Optional: New ingredients",
+                                        "description": "New ingredients",
                                         "type": "string",
                                         "example": "300g pasta\\n5 eggs\\n150g pancetta"
                                     },
                                     "steps": {
-                                        "description": "Optional: New steps",
+                                        "description": "New steps",
                                         "type": "string",
                                         "example": "1. Boil more pasta\\n2. Fry extra pancetta"
                                     },

@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import api from '../services/api';
 import { useRouter } from 'vue-router';
+import RecipeTable from '../Components/RecipeTable.vue';
 
 const auth = useAuthStore();
 const router = useRouter();
@@ -15,25 +16,28 @@ const showDeleteModal = ref(false);
 const recipeToDelete = ref(null);
 const deleting = ref(false);
 
-const FALLBACK_PLACEHOLDER =
-  'https://placehold.co/48x48/dddddd/999999?text=No+Img';
+// Pagination state
+const pagination = ref({
+  current_page: 1,
+  last_page: 1,
+  per_page: 3,
+  total: 0
+});
 
-const recipePictureUrl = (path) => {
-  if (!path) return '';
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9020';
-  return `${base}/storage/${path}`;
-};
-
-const onImageError = (event) => {
-  event.target.src = FALLBACK_PLACEHOLDER;
-  event.target.onerror = null;
-};
-
-const fetchRecipes = async () => {
+const fetchRecipes = async (page = 1) => {
   try {
     loading.value = true;
-    const response = await api.get('/recipes');
-    recipes.value = response.data.data || response.data;
+    const response = await api.get(`/recipes?page=${page}`);
+    recipes.value = response.data.data;
+    const meta = response.data.extra?.meta;
+
+    pagination.value = {
+      current_page: meta?.current_page || 1,
+      last_page: meta?.last_page || 1,
+      per_page: meta?.per_page || 3,
+      total: meta?.total || 0
+    };
+
   } catch (err) {
     if (err.response?.status === 401) {
       auth.logout();
@@ -106,60 +110,13 @@ onMounted(() => {
       </router-link>
     </div>
 
-    <!-- Recipes Table -->
-    <div v-else class="bg-white shadow-md rounded-lg overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Image
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Name
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Cuisine
-              </th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="recipe in recipes" :key="recipe.id" class="hover:bg-gray-50 transition">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <img
-                  :src="recipePictureUrl(recipe.picture)"
-                  alt="Recipe"
-                  class="h-12 w-12 rounded-full object-cover border"
-                  @error="onImageError"
-                />
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">{{ recipe.name }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-600">{{ recipe.cuisine_type || '—' }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <router-link :to="{ name: 'recipe.show', params: { id: recipe.id } }"
-                  class="text-indigo-600 hover:text-indigo-900 mr-3">
-                  View
-                </router-link>
-                <router-link :to="{ name: 'recipe.edit', params: { id: recipe.id } }"
-                  class="text-emerald-600 hover:text-emerald-900 mr-3">
-                  Edit
-                </router-link>
-                <button @click="confirmDelete(recipe)" class="text-red-600 hover:text-red-900">
-                  Delete
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+   <RecipeTable
+    :recipes="recipes"
+    :pagination="pagination"
+    :loading="loading"
+    @delete="confirmDelete"
+    @page-change="fetchRecipes"
+  />
 
     <!-- Delete Confirmation Modal -->
     <teleport to="body">
@@ -174,7 +131,8 @@ onMounted(() => {
         >
           <h3 class="text-lg font-semibold text-gray-900 mb-2">Delete Recipe?</h3>
           <p class="text-sm text-gray-600 mb-6">
-            Are you sure you want to delete "<strong>{{ recipeToDelete?.name }}</strong>"? This action cannot be undone.
+            Are you sure you want to delete "<strong>{{ recipeToDelete?.name }}</strong>"?
+            This action cannot be undone.
           </p>
           <div class="flex justify-end space-x-3">
             <button

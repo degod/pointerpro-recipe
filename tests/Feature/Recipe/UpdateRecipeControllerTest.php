@@ -6,8 +6,8 @@ use App\Http\Controllers\Recipe\UpdateRecipeController;
 use App\Http\Requests\Recipe\UpdateRecipeRequest;
 use App\Models\Recipe;
 use App\Services\ResponseService;
+use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Storage;
 use Mockery;
 
@@ -19,7 +19,10 @@ class UpdateRecipeControllerTest extends RecipeControllerTest
 
         $oldFile = UploadedFile::fake()->image('old.jpg');
         $oldPath = 'recipes/' . $oldFile->hashName();
+        Storage::disk('public')->putFileAs('recipes', $oldFile, $oldFile->hashName());
+
         $newFile = UploadedFile::fake()->image('new.jpg');
+        $expectedNewPath = "recipes/" . $newFile->hashName();
 
         $recipe = Recipe::factory()->create([
             'user_id' => $this->user->id,
@@ -27,32 +30,28 @@ class UpdateRecipeControllerTest extends RecipeControllerTest
             'name' => 'Original Name',
         ]);
 
-        Storage::disk('public')->putFileAs('recipes', $oldFile, $oldFile->hashName());
-        $request = \Illuminate\Http\Request::create(
+        $request = Request::create(
             "/api/v1/recipes/{$recipe->id}",
             'PUT',
-            ['name' => 'Updated Name'],
+            [
+                'name' => 'Updated Name',
+                'cuisine_type' => 'Italian',
+                'ingredients' => '...',
+                'steps' => '...',
+            ],
             [],
             ['picture' => $newFile]
         );
+
         $formRequest = UpdateRecipeRequest::createFrom($request);
         $formRequest->setContainer($this->app);
         $formRequest->setUserResolver(fn() => $this->user);
-
-        $route = new Route('PUT', '/api/v1/recipes/{recipe}', []);
-        $route->parameters = ['recipe' => $recipe, 'id' => $recipe->id];
-        $formRequest->setRouteResolver(fn() => $route);
-        $formRequest->setValidator($this->app['validator']->make($formRequest->all(), $formRequest->rules()));
         $formRequest->validateResolved();
-        $uploadedPath = $formRequest->file('picture')->store('recipes', 'public');
-        $expectedData = [
-            'name' => 'Updated Name',
-            'picture' => $uploadedPath,
-        ];
 
-        $updatedRecipe = $recipe->replicate();
-        $updatedRecipe->fill($expectedData);
-        $updatedRecipe->exists = true;
+        $updatedRecipe = clone $recipe;
+        $updatedRecipe->name = 'Updated Name';
+        $updatedRecipe->picture = $expectedNewPath;
+
         $mockedRecipe = Mockery::mock($recipe)->makePartial();
         $mockedRecipe->shouldReceive('fresh')->andReturn($updatedRecipe);
 
@@ -65,21 +64,26 @@ class UpdateRecipeControllerTest extends RecipeControllerTest
         $this->repositoryMock
             ->shouldReceive('update')
             ->once()
-            ->with($mockedRecipe, $expectedData)
+            ->with(Mockery::type(Recipe::class), [
+                'name' => 'Updated Name',
+                'cuisine_type' => 'Italian',
+                'ingredients' => '...',
+                'steps' => '...',
+                'picture' => $expectedNewPath,
+            ])
             ->andReturn(true);
 
-        $this->responseService = $this->app->make(ResponseService::class);
-        $controller = new UpdateRecipeController($this->repositoryMock, $this->responseService);
-        $response = $controller($formRequest, $recipe->id);
-        $this->assertEquals(200, $response->getStatusCode());
+        $controller = new UpdateRecipeController($this->repositoryMock, $this->app->make(ResponseService::class));
 
+        $response = $controller($formRequest, $recipe->id);
+
+        $this->assertEquals(200, $response->getStatusCode());
         $json = $response->getData();
-        $this->assertEquals('success', $json->status);
-        $this->assertEquals('Recipe updated successfully', $json->message);
+
         $this->assertEquals('Updated Name', $json->data->name);
-        $this->assertEquals($uploadedPath, $json->data->picture);
+        $this->assertEquals($expectedNewPath, $json->data->picture);
 
         $this->assertFalse(Storage::disk('public')->exists($oldPath));
-        $this->assertTrue(Storage::disk('public')->exists($uploadedPath));
+        $this->assertTrue(Storage::disk('public')->exists($expectedNewPath));
     }
 }

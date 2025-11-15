@@ -61,6 +61,6 @@ class IndexRecipeController extends Controller
             $recipes = $this->recipeRepo->findByUser($userId);
         }
 
-        return $this->response->success(200, 'Recipes retrieved', $recipes->items());
+        return $this->response->successPaginated(200, 'Recipes retrieved', $recipes);
     }
 }

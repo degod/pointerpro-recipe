@@ -18,12 +18,12 @@ class RecipeRepository implements RecipeRepositoryInterface
 
     public function findByUser(int $userId): LengthAwarePaginator
     {
-        return $this->recipeModel->where(['user_id' => $userId])->orderBy('id', 'DESC')->paginate(3);
+        return $this->recipeModel->where(['user_id' => $userId])->orderBy('id', 'DESC')->paginate(config('pagination.default.per_page'));
     }
 
     public function paginate(int $perPage = 15): LengthAwarePaginator
     {
-        return $this->recipeModel->paginate($perPage);
+        return $this->recipeModel->paginate($perPage ?? config('pagination.default.per_page'));
     }
 
     public function find(int $id): ?Recipe
