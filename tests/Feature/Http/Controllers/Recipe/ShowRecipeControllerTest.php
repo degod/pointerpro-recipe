@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Recipe;
+namespace Tests\Feature\Http\Controllers\Recipe;
 
 use App\Http\Controllers\Recipe\ShowRecipeController;
 use App\Models\Recipe;

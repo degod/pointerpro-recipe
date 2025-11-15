@@ -45,4 +45,17 @@ class RecipeRepository implements RecipeRepositoryInterface
     {
         return $recipe->delete();
     }
+
+    public function filterRecipes(array $filters): LengthAwarePaginator
+    {
+        return $this->recipeModel
+            ->when($filters['name'] ?? null, function ($query, $name) {
+                $query->where('name', 'LIKE', "%{$name}%");
+            })
+            ->when($filters['cuisine_type'] ?? null, function ($query, $type) {
+                $query->where('cuisine_type', 'LIKE', "%{$type}%");
+            })
+            ->orderBy('created_at', 'DESC')
+            ->paginate(config('pagination.default.per_page'));
+    }
 }
