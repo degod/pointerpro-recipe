@@ -1,13 +1,111 @@
-# 1. Build assets (once)
+## INTRODUCTION
 
+Recipe Book application is a small full-stack application that allows users to manage their own recipes. It is build using Laravel for the backend APIs and VueJS for the frontend client-facing side.
+
+## PRE-REQUISITE FOR SETUP
+
+-   Docker desktop
+-   Web browser
+-   Terminal (git bash)
+
+## HOW TO SETUP
+
+-   Make sure your docker desktop is up and running
+-   Launch you terminal and navigate to your working directory
+
+```bash
+cd ./working_dir
+```
+
+-   Clone repository
+
+```bash
+git clone https://github.com/degod/pointerpro-recipe.git
+```
+
+-   Move into the project directory
+
+```bash
+cd pointerpro-recipe/
+```
+
+-   Copy env.example into .env
+
+```bash
+cp .env.example .env
+```
+
+-   Build app using docker
+
+```bash
+docker compose up -d --build
+```
+
+-   Log in to docker container bash
+
+```bash
+docker compose exec app bash
+```
+
+-   Install composer
+
+```bash
+composer install
+```
+
+-   Create an application key
+
+```bash
+php artisan key:generate
+```
+
+-   Run database migration and seeder
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+-   Run automated unit/feature test for backend
+
+```bash
+php artisan test
+```
+
+-   Exit docker container bash
+
+```bash
+exit
+```
+
+-   Build frontend assets
+
+```bash
 docker compose --profile build run --rm assets
+```
 
-# 2. Start app
+-   Run automated test for the frontend using vitest
 
-docker compose up -d --build app nginx db
+```bash
+docker compose --profile build run --rm assets npx vitest run
+```
 
-docker compose --profile build up --build -d
+-   To access application, visit
+    `http://localhost:9020`
 
-# Test confirmation command
+-   To Login as "Super Admin":
 
-./vendor/bin/phpunit --configuration phpunit.xml
+    -   `U:  admin@mail.com`
+    -   `P:  admin123`
+
+-   To Login as any user:
+
+    -   `U:  select from the list of users (or test@mail.com)`
+    -   `P:  password`
+
+-   To access application's database, visit
+
+    -   `http://localhost:9021`
+
+-   To access application API documentation, visit
+
+    -   `http://localhost:9021/api/docs`

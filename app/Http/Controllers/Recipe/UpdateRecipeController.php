@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Recipe;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Recipe\UpdateRecipeRequest;
 use App\Repositories\Recipe\RecipeRepositoryInterface;
@@ -33,10 +34,10 @@ use OpenApi\Annotations as OA;
  *             mediaType="multipart/form-data",
  *             @OA\Schema(
  *                 type="object",
- *                 @OA\Property(property="name", type="string", example="Updated Carbonara", description="Optional: New name"),
- *                 @OA\Property(property="cuisine_type", type="string", example="Italian", description="Optional: New cuisine"),
- *                 @OA\Property(property="ingredients", type="string", example="300g pasta\n5 eggs\n150g pancetta", description="Optional: New ingredients"),
- *                 @OA\Property(property="steps", type="string", example="1. Boil more pasta\n2. Fry extra pancetta", description="Optional: New steps"),
+ *                 @OA\Property(property="name", type="string", example="Updated Carbonara", description="New name"),
+ *                 @OA\Property(property="cuisine_type", type="string", example="Italian", description="New cuisine"),
+ *                 @OA\Property(property="ingredients", type="string", example="300g pasta\n5 eggs\n150g pancetta", description="New ingredients"),
+ *                 @OA\Property(property="steps", type="string", example="1. Boil more pasta\n2. Fry extra pancetta", description="New steps"),
  *                 @OA\Property(property="picture", type="string", format="binary", description="Optional: Replace image (deletes old one)")
  *             )
  *         )
@@ -78,6 +79,10 @@ class UpdateRecipeController extends Controller
 
         if (!$recipe) {
             return $this->response->error(404, 'Recipe not found');
+        }
+
+        if ($recipe->user_id !== auth('sanctum')->id() && auth('sanctum')->user()->role !== UserRole::ADMIN) {
+            return $this->response->error(403, 'Unauthorized');
         }
 
         $data = $request->validated();

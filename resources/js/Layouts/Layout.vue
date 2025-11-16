@@ -14,7 +14,7 @@ function logout() {
 <template>
     <div>
         <header class="bg-indigo-500 text-white">
-            <nav class="flex items-center justify-between p-4 max-w-screen-lg mx-auto">
+            <nav class="flex items-center justify-between p-4 max-w-screen-xl mx-auto">
                 <!-- Left Nav -->
                 <div class="space-x-6">
                     <router-link to="/" class="hover:underline">Home</router-link>
@@ -39,4 +39,3 @@ function logout() {
         </main>
     </div>
 </template>
-

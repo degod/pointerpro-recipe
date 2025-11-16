@@ -15,18 +15,17 @@ const routes = [
     path: '/',
     component: Layout,
     children: [
-      { path: '', name: 'home', component: Home, meta: { requiresAuth: true } },
-      { path: 'login', name: 'login', component: Login },
-      { path: 'register', name: 'register', component: Register },
+      { path: '', name: 'home', component: Home, meta: { requiresAuth: false } },
+      { path: 'login', name: 'login', component: Login, meta: { requiresAuth: false } },
+      { path: 'register', name: 'register', component: Register, meta: { requiresAuth: false } },
 
       {
         path: 'recipes',
-        meta: { requiresAuth: true },
         children: [
-          { path: '', name: 'recipes', component: Recipe },
-          { path: 'create', name: 'recipe.create', component: RecipeCreate },
-          { path: ':id', name: 'recipe.show', component: RecipeShow, props: true },
-          { path: ':id/edit', name: 'recipe.edit', component: RecipeEdit, props: true },
+          { path: '', name: 'recipes', component: Recipe, meta: { requiresAuth: true } },
+          { path: 'create', name: 'recipe.create', component: RecipeCreate, meta: { requiresAuth: true } },
+          { path: ':id', name: 'recipe.show', component: RecipeShow, props: true, meta: { requiresAuth: false } },
+          { path: ':id/edit', name: 'recipe.edit', component: RecipeEdit, props: true, meta: { requiresAuth: true } },
         ],
       },
     ],
@@ -41,14 +40,17 @@ const router = createRouter({
 // Navigation Guard
 router.beforeEach((to, from, next) => {
   const auth = useAuthStore();
-  const publicPages = ['login', 'register'];
-  const isPublic = publicPages.includes(to.name);
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
 
-  if (!isPublic && !auth.isAuthenticated) {
-    return next({
-      name: 'login',
-      query: { redirect: to.fullPath },
+  if (requiresAuth && !auth.isAuthenticated) {
+    return next({ 
+      name: 'login', 
+      query: { redirect: to.fullPath } 
     });
+  }
+
+  if (auth.isAuthenticated && (to.name === 'login' || to.name === 'register')) {
+    return next({ name: 'home' });
   }
 
   next();

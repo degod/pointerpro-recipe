@@ -159,6 +159,14 @@ jobs:
           docker compose -f .github/docker-compose.ci.yml up -d 
           docker compose -f .github/docker-compose.ci.yml run --rm app php -d display_errors=Off artisan test --stop-on-failure
 
+      - name: Run Vitest (frontend tests)
+        run: |
+          # Install vitest (only if not in package-lock.json)
+          docker compose --profile build run --rm assets npm install -D vitest@4.0.9
+
+          # Now run it — npx will use the installed version
+          docker compose --profile build run --rm assets npx vitest run --reporter=verbose
+
       - name: Tear down
         if: always()
         run: docker compose -f .github/docker-compose.ci.yml down -v

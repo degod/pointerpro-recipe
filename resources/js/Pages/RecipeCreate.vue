@@ -67,7 +67,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="max-w-screen-lg mx-auto px-4 py-6 md:px-6 md:py-8">
+  <div class="max-w-screen-xl mx-auto px-4 py-6 md:px-6 md:py-8">
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-800">Create New Recipe</h1>
     </div>
