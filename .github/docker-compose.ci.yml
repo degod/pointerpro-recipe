@@ -31,3 +31,11 @@ services:
       timeout: 3s
       retries: 10
       start_period: 10s
+      
+  assets:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: tail -f /dev/null
+    user: "1000:1000"

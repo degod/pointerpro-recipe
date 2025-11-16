@@ -39,4 +39,3 @@ function logout() {
         </main>
     </div>
 </template>
-

@@ -73,6 +73,15 @@ watch(filters, _.debounce(() => {
   applyFilters();
 }, 500), { deep: true });
 
+defineExpose({
+  recipes,
+  loading,
+  error,
+  hasMore,
+  filters,
+  loadRecipes
+});
+
 onMounted(() => {
   loadRecipes();
 });

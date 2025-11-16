@@ -4,6 +4,7 @@ FROM php:8.2-fpm-alpine AS php-builder
 RUN apk add --no-cache \
     git curl zip unzip libpng libjpeg-turbo freetype libzip \
     oniguruma icu libxml2 postgresql-libs mysql-client \
+    libc6-compat chromium \
     && apk add --no-cache --virtual .build-deps \
     $PHPIZE_DEPS libpng-dev libjpeg-turbo-dev freetype-dev libzip-dev oniguruma-dev icu-dev libxml2-dev postgresql-dev \
     && docker-php-ext-configure gd --with-jpeg --with-freetype \

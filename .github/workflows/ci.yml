@@ -159,6 +159,10 @@ jobs:
           docker compose -f .github/docker-compose.ci.yml up -d 
           docker compose -f .github/docker-compose.ci.yml run --rm app php -d display_errors=Off artisan test --stop-on-failure
 
+      - name: Run Vitest (frontend tests)
+        run: |
+          docker compose --profile build run --rm assets npx vitest run --reporter=verbose
+
       - name: Tear down
         if: always()
         run: docker compose -f .github/docker-compose.ci.yml down -v
