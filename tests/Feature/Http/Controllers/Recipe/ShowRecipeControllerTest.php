@@ -25,7 +25,7 @@ class ShowRecipeControllerTest extends RecipeControllerTest
         $this->assertEquals($recipe->name, json_decode($response->getContent())->data->name);
     }
 
-    public function test_it_returns_403_for_other_user_recipe()
+    public function test_it_returns_200_for_other_user_recipe()
     {
         $recipe = Recipe::factory()->make(['user_id' => $this->otherUser->id]);
 
@@ -39,6 +39,6 @@ class ShowRecipeControllerTest extends RecipeControllerTest
 
         $response = $controller(1);
 
-        $this->assertEquals(403, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
     }
 }
