@@ -15,9 +15,9 @@ const routes = [
     path: '/',
     component: Layout,
     children: [
-      { path: '', name: 'home', component: Home, meta: { requiresAuth: true } },
-      { path: 'login', name: 'login', component: Login },
-      { path: 'register', name: 'register', component: Register },
+      { path: '', name: 'home', component: Home, meta: { requiresAuth: false } },
+      { path: 'login', name: 'login', component: Login, meta: { requiresAuth: false } },
+      { path: 'register', name: 'register', component: Register, meta: { requiresAuth: false } },
 
       {
         path: 'recipes',
@@ -41,14 +41,17 @@ const router = createRouter({
 // Navigation Guard
 router.beforeEach((to, from, next) => {
   const auth = useAuthStore();
-  const publicPages = ['login', 'register', 'home'];
-  const isPublic = publicPages.includes(to.name);
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
 
-  if (!isPublic && !auth.isAuthenticated) {
-    return next({
-      name: 'login',
-      query: { redirect: to.fullPath },
+  if (requiresAuth && !auth.isAuthenticated) {
+    return next({ 
+      name: 'login', 
+      query: { redirect: to.fullPath } 
     });
+  }
+
+  if (auth.isAuthenticated && (to.name === 'login' || to.name === 'register')) {
+    return next({ name: 'home' });
   }
 
   next();
