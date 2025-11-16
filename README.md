@@ -105,3 +105,7 @@ docker compose --profile build run --rm assets npx vitest run
 -   To access application's database, visit
 
     -   `http://localhost:9021`
+
+-   To access application API documentation, visit
+
+    -   `http://localhost:9021/api/docs`
