@@ -2,7 +2,7 @@
 import { ref, defineEmits } from 'vue';
 
 const props = defineProps({
-  modelValue: File, // v-model binding
+  modelValue: File,
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -11,7 +11,6 @@ const previewUrl = ref(props.modelValue ? URL.createObjectURL(props.modelValue) 
 const isDragging = ref(false);
 const fileInput = ref(null);
 
-// Drag & Drop Handlers
 const handleDragOver = (e) => {
   e.preventDefault();
   isDragging.value = true;
@@ -43,7 +42,6 @@ const handleFile = (file) => {
   previewUrl.value = URL.createObjectURL(file);
 };
 
-// Remove image
 const removeImage = () => {
   emit('update:modelValue', null);
   previewUrl.value = null;
@@ -95,6 +93,3 @@ const removeImage = () => {
     </div>
   </div>
 </template>
-
-<style scoped>
-</style>

@@ -2,24 +2,34 @@
 
 namespace App\Http\Controllers\Recipe;
 
-use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Repositories\Recipe\RecipeRepositoryInterface;
 use App\Services\ResponseService;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use OpenApi\Annotations as OA;
 
 /**
  * @OA\Get(
- *     path="/api/v1/recipes",
+ *     path="/api/v1/recipes/filtered",
+ *     summary="Filter and list recipes",
  *     tags={"Recipes"},
- *     summary="List authenticated user's recipes",
- *     description="Retrieve all recipes created by the authenticated user. Pagination is not included in this endpoint.",
- *     security={{"sanctum":{}}},
- *
+ *     @OA\Parameter(
+ *         name="name",
+ *         in="query",
+ *         description="Search by recipe name",
+ *         required=false,
+ *         @OA\Schema(type="string")
+ *     ),
+ *     @OA\Parameter(
+ *         name="cuisine_type",
+ *         in="query",
+ *         description="Filter by cuisine type (e.g., Italian, Asian)",
+ *         required=false,
+ *         @OA\Schema(type="string")
+ *     ),
  *     @OA\Response(
  *         response=200,
- *         description="List of user's recipes",
+ *         description="Filtered recipe list",
  *         @OA\JsonContent(
  *             type="array",
  *             @OA\Items(
@@ -35,32 +45,28 @@ use OpenApi\Annotations as OA;
  *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2025-04-05T12:30:00Z")
  *             )
  *         )
- *     ),
- *
- *     @OA\Response(response=401, description="Unauthenticated")
+ *     )
  * )
  */
-class IndexRecipeController extends Controller
+class FilterRecipeController extends Controller
 {
     public function __construct(
         private RecipeRepositoryInterface $recipeRepo,
         private ResponseService $response
     ) {}
 
-    /**
-     * Handle the incoming request.
-     */
-    public function __invoke(): JsonResponse
+    public function __invoke(Request $request)
     {
-        $userId = auth('sanctum')->id();
-        $role = auth('sanctum')->user()->role;
+        $filters = [
+            'name'         => $request->query('name'),
+            'cuisine_type' => $request->query('cuisine_type'),
+        ];
+        $recipes = $this->recipeRepo->filterRecipes($filters);
 
-        if ($role == UserRole::ADMIN) {
-            $recipes = $this->recipeRepo->all();
-        } else {
-            $recipes = $this->recipeRepo->findByUser($userId);
-        }
-
-        return $this->response->successPaginated(200, 'Recipes retrieved', $recipes);
+        return $this->response->successPaginated(
+            200,
+            'Recipes fetched successfully',
+            $recipes
+        );
     }
 }

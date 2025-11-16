@@ -21,8 +21,8 @@ const onImageError = (event) => {
 
 const recipeImageUrl = (path) => {
   if (!path) return '';
-  const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9020';
-  return `${base}/storage/${path}`;
+  const repo = import.meta.env.VITE_IMG_REPO_URL || 'http://localhost:9020';
+  return `${repo}/${path}`;
 };
 
 const fetchRecipe = async () => {
@@ -61,7 +61,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="max-w-screen-lg mx-auto px-4 py-6 md:px-6 md:py-8">
+  <div class="max-w-screen-xl mx-auto px-4 py-6 md:px-6 md:py-8">
     <!-- Loading State -->
     <div v-if="loading" class="flex flex-col items-center justify-center py-16">
       <div class="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-600"></div>

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 
 class ResponseService
@@ -13,6 +14,25 @@ class ResponseService
             'message' => $message,
             'data' => $data,
         ], $status);
+    }
+
+    public function successPaginated(int $code = 200, string $message = 'Retrieved successfully', LengthAwarePaginator $paginator)
+    {
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'data' => $paginator->items(),
+            'error' => null,
+            'errors' => null,
+            'extra' => [
+                'meta' => [
+                    'current_page' => $paginator->currentPage(),
+                    'per_page' => $paginator->perPage(),
+                    'total' => $paginator->total(),
+                    'last_page' => $paginator->lastPage(),
+                ]
+            ]
+        ], $code);
     }
 
     public function error(int $status = 400, string $message = '', array $errors = []): JsonResponse

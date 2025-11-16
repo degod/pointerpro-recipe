@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Recipe;
+namespace Tests\Feature\Http\Controllers\Recipe;
 
 use App\Models\User;
 use App\Repositories\Recipe\RecipeRepositoryInterface;

@@ -21,11 +21,12 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (Throwable $e, Request $request) {
+            $responseService = app(ResponseService::class);
+
             if (! $request->is('api/*')) {
                 return null;
             }
 
-            $responseService = app(ResponseService::class);
             return match (true) {
                 $e instanceof AuthenticationException =>
                 $responseService->error(

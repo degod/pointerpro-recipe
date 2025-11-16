@@ -2,10 +2,11 @@
 import { ref } from 'vue';
 import api from '../services/api';
 import Input from '../Components/Input.vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 
 const router = useRouter();
+const route = useRoute();
 const auth = useAuthStore();
 
 const form = ref({
@@ -31,7 +32,8 @@ const loginUser = async () => {
 
     form.value = { email: '', password: '' };
     
-    router.push({ name: 'home' });
+    const redirectPath = route.query.redirect || { name: 'home' };
+    router.push(redirectPath);
   } catch (error) {
     message = error?.response?.data?.errors;
     console.error(error);

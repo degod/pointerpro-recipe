@@ -18,12 +18,12 @@ class RecipeRepository implements RecipeRepositoryInterface
 
     public function findByUser(int $userId): LengthAwarePaginator
     {
-        return $this->recipeModel->where(['user_id' => $userId])->orderBy('id', 'DESC')->paginate(3);
+        return $this->recipeModel->where(['user_id' => $userId])->orderBy('id', 'DESC')->paginate(config('pagination.default.per_page'));
     }
 
     public function paginate(int $perPage = 15): LengthAwarePaginator
     {
-        return $this->recipeModel->paginate($perPage);
+        return $this->recipeModel->paginate($perPage ?? config('pagination.default.per_page'));
     }
 
     public function find(int $id): ?Recipe
@@ -44,5 +44,18 @@ class RecipeRepository implements RecipeRepositoryInterface
     public function delete(Recipe $recipe): bool
     {
         return $recipe->delete();
+    }
+
+    public function filterRecipes(array $filters): LengthAwarePaginator
+    {
+        return $this->recipeModel
+            ->when($filters['name'] ?? null, function ($query, $name) {
+                $query->where('name', 'LIKE', "%{$name}%");
+            })
+            ->when($filters['cuisine_type'] ?? null, function ($query, $type) {
+                $query->where('cuisine_type', 'LIKE', "%{$type}%");
+            })
+            ->orderBy('created_at', 'DESC')
+            ->paginate(config('pagination.default.per_page'));
     }
 }

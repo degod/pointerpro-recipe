@@ -14,4 +14,5 @@ interface RecipeRepositoryInterface
     public function create(array $data): Recipe;
     public function update(Recipe $recipe, array $data): bool;
     public function delete(Recipe $recipe): bool;
+    public function filterRecipes(array $filters): LengthAwarePaginator;
 }
