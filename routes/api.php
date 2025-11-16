@@ -15,11 +15,11 @@ Route::prefix('v1')->group(function () {
     Route::post('/login', LoginUserController::class)->name('user.login');
 
     Route::get('/recipes/filtered', FilterRecipeController::class)->name('recipes.filter');
+    Route::get('/recipes/{id}', ShowRecipeController::class)->name('recipe.show');
 
     Route::prefix('recipes')->middleware('auth:sanctum')->group(function () {
         Route::get('/', IndexRecipeController::class)->name('recipe.list');
         Route::post('/', StoreRecipeController::class)->name('recipe.create');
-        Route::get('/{id}', ShowRecipeController::class)->name('recipe.show');
         Route::put('/{id}', UpdateRecipeController::class)->name('recipe.update');
         Route::delete('/{id}', DestroyRecipeController::class)->name('recipe.destroy');
     });

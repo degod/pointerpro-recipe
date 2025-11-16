@@ -21,12 +21,11 @@ const routes = [
 
       {
         path: 'recipes',
-        meta: { requiresAuth: true },
         children: [
-          { path: '', name: 'recipes', component: Recipe },
-          { path: 'create', name: 'recipe.create', component: RecipeCreate },
-          { path: ':id', name: 'recipe.show', component: RecipeShow, props: true },
-          { path: ':id/edit', name: 'recipe.edit', component: RecipeEdit, props: true },
+          { path: '', name: 'recipes', component: Recipe, meta: { requiresAuth: true } },
+          { path: 'create', name: 'recipe.create', component: RecipeCreate, meta: { requiresAuth: true } },
+          { path: ':id', name: 'recipe.show', component: RecipeShow, props: true, meta: { requiresAuth: false } },
+          { path: ':id/edit', name: 'recipe.edit', component: RecipeEdit, props: true, meta: { requiresAuth: true } },
         ],
       },
     ],

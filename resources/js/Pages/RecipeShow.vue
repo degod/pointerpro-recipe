@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import api from '../services/api';
@@ -51,24 +51,22 @@ const editRecipe = () => {
   router.push({ name: 'recipe.edit', params: { id: recipe.value.id } });
 };
 
+const showButtons = computed(() => {
+  return route.meta.fromRecipes === true;
+});
+
 onMounted(() => {
-  if (!authStore.isAuthenticated) {
-    router.push({ name: 'login' });
-  } else {
-    fetchRecipe();
-  }
+  fetchRecipe();
 });
 </script>
 
 <template>
   <div class="max-w-screen-xl mx-auto px-4 py-6 md:px-6 md:py-8">
-    <!-- Loading State -->
     <div v-if="loading" class="flex flex-col items-center justify-center py-16">
       <div class="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-600"></div>
       <p class="mt-3 text-gray-600">Loading recipe...</p>
     </div>
 
-    <!-- Error State -->
     <div v-else-if="error" class="max-w-4xl mx-auto bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg mb-6">
       <p class="font-medium">Error</p>
       <p class="text-sm mt-1">{{ error }}</p>
@@ -78,7 +76,8 @@ onMounted(() => {
     </div>
 
     <div v-else-if="recipe" class="w-full bg-white shadow-lg rounded-xl overflow-hidden">
-      <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+      <div v-if="showButtons"
+        class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
         <button @click="goBack" class="text-gray-600 hover:text-gray-900 flex items-center text-sm font-medium">
           Back to All Recipes
         </button>

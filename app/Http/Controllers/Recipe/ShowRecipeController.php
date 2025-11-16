@@ -15,7 +15,6 @@ use OpenApi\Annotations as OA;
  *     tags={"Recipes"},
  *     summary="Get a specific recipe",
  *     description="Retrieve a single recipe by ID. Only the owner can access it.",
- *     security={{"sanctum":{}}},
  *
  *     @OA\Parameter(
  *         name="id",
@@ -63,10 +62,6 @@ class ShowRecipeController extends Controller
 
         if (!$recipe) {
             return $this->response->error(404, 'Recipe not found');
-        }
-
-        if ($recipe->user_id !== auth('sanctum')->id() && auth('sanctum')->user()->role !== UserRole::ADMIN) {
-            return $this->response->error(403, 'Unauthorized');
         }
 
         return $this->response->success(200, 'Recipe retrieved', $recipe->toArray());

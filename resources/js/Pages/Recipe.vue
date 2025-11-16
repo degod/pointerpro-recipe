@@ -100,25 +100,17 @@ onMounted(() => {
       {{ error }}
     </div>
 
-    <div v-else-if="!recipes.length" class="text-center py-12 bg-gray-50 rounded-lg">
+    <RecipeTable
+      :recipes="recipes"
+      :pagination="pagination"
+      :loading="loading"
+      @delete="confirmDelete"
+      @page-change="fetchRecipes"/>
+
+    <div if="!recipes.length" class="text-center py-12 bg-gray-50 rounded-lg">
       <p class="text-gray-600 mb-4">You haven't created any recipes yet.</p>
-      <router-link
-        to="/recipes/create"
-        class="text-emerald-600 hover:text-emerald-700 font-medium"
-      >
-        Create your first recipe
-      </router-link>
     </div>
 
-   <RecipeTable
-    :recipes="recipes"
-    :pagination="pagination"
-    :loading="loading"
-    @delete="confirmDelete"
-    @page-change="fetchRecipes"
-  />
-
-    <!-- Delete Confirmation Modal -->
     <teleport to="body">
       <div
         v-if="showDeleteModal"

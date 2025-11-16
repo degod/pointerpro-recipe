@@ -1,4 +1,6 @@
 <script setup>
+import { useRouter } from 'vue-router';
+
 const props = defineProps({
   recipes: {
     type: Array,
@@ -6,6 +8,8 @@ const props = defineProps({
     default: () => [],
   },
 });
+
+const router = useRouter();
 
 const FALLBACK_PLACEHOLDER =
   'https://placehold.co/120x120/dddddd/999999?text=No+Img';
@@ -20,13 +24,19 @@ const onImageError = (event) => {
   event.target.src = FALLBACK_PLACEHOLDER;
   event.target.onerror = null;
 };
+
+// Click handler
+const goToRecipe = (id) => {
+  router.push({ name: 'recipe.show', params: { id } });
+};
 </script>
 
 <template>
   <div
     v-for="recipe in recipes"
     :key="recipe.id"
-    class="bg-white p-4 rounded-lg shadow"
+    @click="goToRecipe(recipe.id)"
+    class="bg-white p-4 rounded-lg shadow cursor-pointer hover:shadow-lg transition-shadow"
   >
     <img
       :src="recipeImageUrl(recipe.picture)"

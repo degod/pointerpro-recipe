@@ -338,12 +338,7 @@
                     "404": {
                         "description": "Recipe not found"
                     }
-                },
-                "security": [
-                    {
-                        "sanctum": []
-                    }
-                ]
+                }
             },
             "put": {
                 "tags": [
