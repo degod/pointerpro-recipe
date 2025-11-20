@@ -2,10 +2,12 @@
 
 namespace App\Http\Requests\Recipe;
 
+use App\Enums\Visibility;
 use App\Services\ResponseService;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Log;
 
 class StoreRecipeRequest extends FormRequest
 {
@@ -30,6 +32,7 @@ class StoreRecipeRequest extends FormRequest
             'ingredients' => 'required|string',
             'steps' => 'required|string',
             'picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'visibility' => 'required|in:' . implode(",", [Visibility::PRIVATE->value, Visibility::PUBLIC->value]),
         ];
     }
 

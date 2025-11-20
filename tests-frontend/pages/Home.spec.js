@@ -23,7 +23,7 @@ describe('Home.vue', () => {
     pinia = createPinia();
     setActivePinia(pinia);
     const auth = useAuthStore();
-    auth.user = { name: 'Test User', email: 'test@example.com' };
+    auth.user = { name: 'Test User', email: 'test@example.com', role: 'user' };
 
     api.get.mockReset();
     api.get.mockResolvedValue({ data: { data: [{ id: 1, name: 'Pizza' }] } });

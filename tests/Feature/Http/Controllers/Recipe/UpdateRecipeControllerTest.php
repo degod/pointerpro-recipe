@@ -38,6 +38,7 @@ class UpdateRecipeControllerTest extends RecipeControllerTest
                 'cuisine_type' => 'Italian',
                 'ingredients' => '...',
                 'steps' => '...',
+                'visibility' => 'public',
             ],
             [],
             ['picture' => $newFile]
@@ -69,6 +70,7 @@ class UpdateRecipeControllerTest extends RecipeControllerTest
                 'cuisine_type' => 'Italian',
                 'ingredients' => '...',
                 'steps' => '...',
+                'visibility' => 'public',
                 'picture' => $expectedNewPath,
             ])
             ->andReturn(true);

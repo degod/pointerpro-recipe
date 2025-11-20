@@ -6,7 +6,7 @@ import api from '../services/api';
 
 const route = useRoute();
 const router = useRouter();
-const authStore = useAuthStore();
+const auth = useAuthStore();
 
 const recipe = ref(null);
 const loading = ref(true);
@@ -32,7 +32,7 @@ const fetchRecipe = async () => {
     recipe.value = response.data.data || response.data;
   } catch (err) {
     if (err.response?.status === 401) {
-      authStore.logout();
+      auth.logout();
     } else if (err.response?.status === 404) {
       error.value = 'Recipe not found.';
     } else {
@@ -52,7 +52,7 @@ const editRecipe = () => {
 };
 
 const showButtons = computed(() => {
-  return route.meta.fromRecipes === true;
+  return (auth && (auth.user.id===recipe.value.user_id || auth.user.role==='admin'));
 });
 
 onMounted(() => {

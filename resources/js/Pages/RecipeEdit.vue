@@ -6,6 +6,7 @@ import api from '@/services/api';
 import ImageUpload from '../Components/ImageUpload.vue';
 import Input from '../Components/Input.vue';
 import Textarea from '../Components/Textarea.vue';
+import Select from '../Components/Select.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -27,6 +28,16 @@ const loading = ref(false);
 const error = ref(null);
 const success = ref(false);
 const loadingRecipe = ref(true);
+let options = [
+  {
+    name: "Public",
+    value: "public",
+  },
+  {
+    name: "Private",
+    value: "private",
+  }
+];
 
 const FALLBACK_PLACEHOLDER =
   'https://placehold.co/120x120/dddddd/999999?text=No+Img';
@@ -52,6 +63,14 @@ const loadRecipe = async () => {
     form.value.ingredients = recipe.ingredients ?? '';
     form.value.steps = recipe.steps ?? '';
     form.value.current_picture = recipe.picture ?? null;
+    form.value.visibility = recipe.visibility ?? null;
+
+    for(var i=0; i<options.length; i++){
+      var option = options[i];
+      if(option.value === recipe.visibility){
+        options[i].selected = true;
+      }
+    }
   } catch (err) {
     error.value = 'Failed to load recipe.';
     console.error(err);
@@ -71,6 +90,7 @@ const submitRecipe = async () => {
   formData.append('cuisine_type', form.value.cuisine_type);
   formData.append('ingredients', form.value.ingredients);
   formData.append('steps', form.value.steps);
+  formData.append('visibility', form.value.visibility);
   if (form.value.picture) {
     formData.append('picture', form.value.picture);
   }
@@ -88,8 +108,8 @@ const submitRecipe = async () => {
     success.value = true;
 
     setTimeout(() => {
-      router.push({ name: 'recipes' });
-    }, 1500);
+      router.push({ name: 'recipe.show', params: { id: recipeId } });
+    }, 500);
 
   } catch (err) {
     error.value = err.response?.data?.message || 'Failed to update recipe.';
@@ -143,6 +163,12 @@ onMounted(() => {
           type="text"
           placeholder="e.g., Italian, Thai, Mexican"
           :message="message?.cuisine_type || ''"
+        />
+        <Select
+          v-model="form.visibility"
+          label="Recipe Visibility"
+          :options="options"
+          :message="message?.visibility || ''"
         />
         <div class="mb-3">
           <label class="block text-sm font-medium text-gray-700 mb-1">Existing Image</label>

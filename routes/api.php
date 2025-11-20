@@ -14,8 +14,10 @@ Route::prefix('v1')->group(function () {
     Route::post('/register', RegisterUserController::class)->name('user.register');
     Route::post('/login', LoginUserController::class)->name('user.login');
 
-    Route::get('/recipes/filtered', FilterRecipeController::class)->name('recipes.filter');
-    Route::get('/recipes/{id}', ShowRecipeController::class)->name('recipe.show');
+    Route::middleware('throttle:open-api-routes')->group(function () {
+        Route::get('/recipes/filtered', FilterRecipeController::class)->name('recipes.filter');
+        Route::get('/recipes/{id}', ShowRecipeController::class)->name('recipe.show');
+    });
 
     Route::prefix('recipes')->middleware('auth:sanctum')->group(function () {
         Route::get('/', IndexRecipeController::class)->name('recipe.list');

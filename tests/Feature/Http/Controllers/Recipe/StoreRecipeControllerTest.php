@@ -22,6 +22,7 @@ class StoreRecipeControllerTest extends RecipeControllerTest
             'cuisine_type' => 'Italian',
             'ingredients'  => "200g pasta\n4 eggs",
             'steps'        => "1. Boil\n2. Mix",
+            'visibility'   => "public",
         ], [], ['picture' => $file]);
 
         $request->setContainer($this->app);
@@ -47,6 +48,7 @@ class StoreRecipeControllerTest extends RecipeControllerTest
                     && $arg['ingredients']  === $expectedData['ingredients']
                     && $arg['steps']        === $expectedData['steps']
                     && $arg['user_id']      === $expectedData['user_id']
+                    && $arg['visibility']   === $expectedData['visibility']
                     && str_starts_with($arg['picture'], 'recipes/');
             }))
             ->andReturn($recipeModel);

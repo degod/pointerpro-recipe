@@ -38,7 +38,8 @@ use OpenApi\Annotations as OA;
  *                 @OA\Property(property="cuisine_type", type="string", example="Italian", description="New cuisine"),
  *                 @OA\Property(property="ingredients", type="string", example="300g pasta\n5 eggs\n150g pancetta", description="New ingredients"),
  *                 @OA\Property(property="steps", type="string", example="1. Boil more pasta\n2. Fry extra pancetta", description="New steps"),
- *                 @OA\Property(property="picture", type="string", format="binary", description="Optional: Replace image (deletes old one)")
+ *                 @OA\Property(property="picture", type="string", format="binary", description="Optional: Replace image (deletes old one)"),
+ *                 @OA\Property(property="visibility", type="string", description="Replace visibility")
  *             )
  *         )
  *     ),
@@ -55,6 +56,7 @@ use OpenApi\Annotations as OA;
  *             @OA\Property(property="ingredients", type="string", example="300g pasta\n5 eggs\n150g pancetta"),
  *             @OA\Property(property="steps", type="string", example="1. Boil more pasta\n2. Fry extra pancetta"),
  *             @OA\Property(property="picture", type="string", nullable=true, example="recipes/xyz789.jpg"),
+ *             @OA\Property(property="visibility", type="string", example="public"),
  *             @OA\Property(property="created_at", type="string", format="date-time"),
  *             @OA\Property(property="updated_at", type="string", format="date-time")
  *         )

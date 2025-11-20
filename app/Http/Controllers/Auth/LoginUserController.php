@@ -31,8 +31,8 @@ class LoginUserController extends Controller
      *         required=true,
      *         @OA\JsonContent(
      *             required={"email","password"},
-     *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
-     *             @OA\Property(property="password", type="string", format="password", example="secret123")
+     *             @OA\Property(property="email", type="string", format="email", example="test@mail.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="password")
      *         )
      *     ),
      *     @OA\Response(
@@ -88,6 +88,7 @@ class LoginUserController extends Controller
             200,
             'User logged in successfully',
             [
+                'id' => $user->id,
                 'uuid' => $user->uuid,
                 'name' => $user->name,
                 'email' => $user->email,

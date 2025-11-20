@@ -94,6 +94,10 @@ onUnmounted(() => {
 <template>
   <div class="min-h-screen bg-gray-100 px-4 py-6 md:px-8">
     <div class="max-w-screen-xl mx-auto">
+      <div v-if="auth">
+        <h1 class="text-2xl font-bold mb-5">Welcome, {{ auth.user.role.toUpperCase() + " " +auth.user.name }}!</h1>
+      </div>
+    
       <div class="flex gap-3 mb-6">
         <input
           v-model="filters.name"
@@ -107,7 +111,6 @@ onUnmounted(() => {
         />
       </div>
 
-      <!-- Recipe list -->
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         <HomeRecipeCard :recipes="recipes" />
       </div>

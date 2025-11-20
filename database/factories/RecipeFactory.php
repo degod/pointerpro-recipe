@@ -28,6 +28,7 @@ class RecipeFactory extends Factory
             'ingredients' => implode("\n", fake()->paragraphs(3)),
             'steps' => implode("\n\n", fake()->paragraphs(4)),
             'picture' => null,
+            'visibility' => 'public',
         ];
     }
 }
