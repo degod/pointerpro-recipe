@@ -76,13 +76,33 @@ services:
     depends_on:
       - db
 
+  vite:
+    image: node:20-alpine
+    container_name: recipe-vite
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "5173:5173"
+    command: sh -c "npm set audit false && npm set fund false && npm install && npm run dev -- --host 0.0.0.0"
+    profiles: ["dev"]
+
   assets:
     image: node:20-alpine
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
-    command: sh -c "npm install && npm run build"
+    command: sh -c "npm set audit false && npm set fund false && npm install && npm run build"
     profiles: ["build"]
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: news-aggregator-mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - recipe-network
 
 networks:
   recipe-network:

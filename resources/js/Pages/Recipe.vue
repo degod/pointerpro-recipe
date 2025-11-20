@@ -107,7 +107,7 @@ onMounted(() => {
       @delete="confirmDelete"
       @page-change="fetchRecipes"/>
 
-    <div if="!recipes.length" class="text-center py-12 bg-gray-50 rounded-lg">
+    <div v-if="!recipes.length" class="text-center py-12 bg-gray-50 rounded-lg">
       <p class="text-gray-600 mb-4">You haven't created any recipes yet.</p>
     </div>
 

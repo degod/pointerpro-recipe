@@ -83,6 +83,12 @@ exit
 docker compose --profile build run --rm assets
 ```
 
+-   To run frontend assets in dev mode
+
+```bash
+docker compose --profile dev up --build
+```
+
 -   Run automated test for the frontend using vitest
 
 ```bash

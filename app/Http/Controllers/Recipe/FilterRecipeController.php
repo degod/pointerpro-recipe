@@ -41,6 +41,7 @@ use OpenApi\Annotations as OA;
  *                 @OA\Property(property="ingredients", type="string", example="200g pasta\n4 eggs\n100g pancetta"),
  *                 @OA\Property(property="steps", type="string", example="1. Boil pasta\n2. Fry pancetta\n3. Mix with eggs"),
  *                 @OA\Property(property="picture", type="string", nullable=true, example="recipes/abc123.jpg"),
+ *                 @OA\Property(property="visibility", type="string", example="public"),
  *                 @OA\Property(property="created_at", type="string", format="date-time", example="2025-04-05T10:00:00Z"),
  *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2025-04-05T12:30:00Z")
  *             )
