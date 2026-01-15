@@ -15,7 +15,8 @@ class Recipe extends Model
         'cuisine_type',
         'ingredients',
         'steps',
-        'picture'
+        'picture',
+        'visibility'
     ];
 
     public function user()

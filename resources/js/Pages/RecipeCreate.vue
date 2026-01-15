@@ -6,6 +6,7 @@ import api from '@/services/api';
 import ImageUpload from '../Components/ImageUpload.vue';
 import Input from '../Components/Input.vue';
 import Textarea from '../Components/Textarea.vue';
+import Select from '../Components/Select.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -22,6 +23,17 @@ let message = ref('');
 const loading = ref(false);
 const error = ref(null);
 const success = ref(false);
+let options = [
+  {
+    name: "Public",
+    value: "public",
+    selected: true,
+  },
+  {
+    name: "Private",
+    value: "private",
+  }
+];
 
 const submitRecipe = async () => {
   if (!form.value.name.trim()) {
@@ -34,6 +46,7 @@ const submitRecipe = async () => {
   formData.append('cuisine_type', form.value.cuisine_type);
   formData.append('ingredients', form.value.ingredients);
   formData.append('steps', form.value.steps);
+  formData.append('visibility', form.value.visibility);
   if (form.value.picture) {
     formData.append('picture', form.value.picture);
   }
@@ -95,6 +108,13 @@ onMounted(() => {
         type="text"
         placeholder="e.g., Italian, Thai, Mexican"
         :message="message?.cuisine_type || ''"
+      />
+
+      <Select
+        v-model="form.visibility"
+        label="Recipe Visibility"
+        :options="options"
+        :message="message?.visibility || ''"
       />
 
       <ImageUpload v-model="form.picture" />
